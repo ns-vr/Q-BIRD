@@ -1,0 +1,7 @@
+customer_id,predicted_probability,rank,is_top_10,contact_cost,expected_deposit_value,capacity_units,customer_segment,expected_net_value
+C0079,0.5048244836,2,True,3,24,3,A,9.1157876055
+C0170,0.4985995778,3,True,1,22,1,C,9.9691907105
+C0338,0.4961672698,4,True,2,18,2,A,6.9310108561
+C0183,0.4899086632,5,True,2,14,3,B,4.8587212848
+C0327,0.4580680502,7,True,1,25,4,B,10.4517012550
+C0256,0.4528987035,8,True,1,22,4,A,8.9637714778

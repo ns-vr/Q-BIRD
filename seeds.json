@@ -1,0 +1,8 @@
+{
+  "data_split": 2026,
+  "model_training": 2026,
+  "optimizer": 2026,
+  "transpiler": 2026,
+  "simulator": 2026,
+  "note": "All seeds are declared in backend/pipeline.py. Update consistently if changed."
+}

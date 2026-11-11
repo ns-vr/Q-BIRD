@@ -1,0 +1,65 @@
+{
+  "seed": 42,
+  "python": "3.13.5",
+  "pandas": "2.2.3",
+  "numpy": "2.3.5",
+  "sklearn": "1.8.0",
+  "training_rows": 300,
+  "test_rows": 100,
+  "features": [
+    "age",
+    "job",
+    "marital",
+    "education",
+    "default",
+    "balance",
+    "housing",
+    "loan",
+    "contact",
+    "day",
+    "month",
+    "campaign",
+    "pdays",
+    "previous",
+    "poutcome"
+  ],
+  "positive_training_labels": 35,
+  "selected_model": "random_forest",
+  "validation_metrics": {
+    "logistic_regression": {
+      "roc_auc": 0.6210242587601078,
+      "pr_auc": 0.20202519558795048,
+      "brier_score": 0.20599220819288572,
+      "log_loss": 0.5998900580027028,
+      "precision_at_10": 0.3,
+      "recall_at_10": 0.08571428571428572,
+      "evaluation": "5-fold out-of-fold predictions on training rows"
+    },
+    "random_forest": {
+      "roc_auc": 0.637088948787062,
+      "pr_auc": 0.21595508986333473,
+      "brier_score": 0.11974184990387116,
+      "log_loss": 0.4023332836304332,
+      "precision_at_10": 0.3,
+      "recall_at_10": 0.08571428571428572,
+      "evaluation": "5-fold out-of-fold predictions on training rows"
+    },
+    "extra_trees": {
+      "roc_auc": 0.5911590296495958,
+      "pr_auc": 0.19116464662093796,
+      "brier_score": 0.14763390504371868,
+      "log_loss": 0.46933151905924414,
+      "precision_at_10": 0.3,
+      "recall_at_10": 0.08571428571428572,
+      "evaluation": "5-fold out-of-fold predictions on training rows"
+    }
+  },
+  "stage2_method": "custom p=1 diagonal-Hamiltonian statevector QAOA; Stage-2 circuit not transpiled by Qiskit",
+  "stage2_seed": 42,
+  "stage2_shots": 8192,
+  "stage3_backend": "NumPy seeded shot simulator with approximate 0.1% measurement bit-flip noise (Qiskit Aer unavailable)",
+  "stage3_shots": 8192,
+  "stage3_seed": 42,
+  "stage3_monte_carlo_iterations": 500000,
+  "runtime_seconds": 4.823786497116089
+}
