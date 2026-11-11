@@ -1,0 +1,16 @@
+{
+  "source_workbook": "bank_campaign_participant_release.xlsx",
+  "training_sheet": "Stage1_Train",
+  "test_sheet": "Stage1_Test",
+  "operations_sheet": "Stage2_Data",
+  "target_column": "y",
+  "id_column": "customer_id",
+  "target_mapping": {"no": 0, "yes": 1},
+  "stage2_objective": "sum(predicted_probability * expected_deposit_value - contact_cost)",
+  "candidate_count": 10,
+  "selection_count": 6,
+  "budget_limit": 25,
+  "capacity_limit": 22,
+  "seed": 42,
+  "note": "Official supplied workbook. Test labels are not present and are never used for training or validation."
+}
