@@ -1,56 +1,272 @@
-# Q-BIRD
+#  Q-BIRD
+### Quantum-Assisted Banking Intelligence & Resource Decisions
 
-**Quantum-assisted banking intelligence and resource decisions.** Q-BIRD connects customer subscription prediction, constrained campaign allocation, and a six-qubit probability experiment in one reproducible pipeline.
+**Turning banking data into smarter customer decisions through machine learning, constrained optimisation, and quantum probability experiments.**
 
-This repository uses the official Atomiq participant workbook in `data/bank_campaign_participant_release.xlsx`. It contains 300 labeled training customers, 100 unlabeled test customers, campaign economics for the 400 customers, and the official constraints. No labels are available for the 100 test customers, and the pipeline does not invent them.
+<p align="center">
+  <strong>Predict. Prioritise. Simulate.</strong>
+</p>
 
-## What is implemented
+Q-BIRD is a banking intelligence prototype designed to explore how machine learning and quantum-inspired computing techniques can support more informed customer selection and resource allocation decisions.
 
-1. **Stage 1, prediction.** Three classical models are compared using the same seeded five-fold out-of-fold predictions. Preprocessing is part of each scikit-learn pipeline, so imputation, scaling, and one-hot encoding are fitted inside each fold. Model selection uses PR-AUC, with Brier score as a tie-breaker. The selected model is refit on all 300 labeled rows and predicts all 100 test customers. Ranking is probability descending, then `customer_id` ascending.
-2. **Stage 2, constrained selection.** The top ten candidates are joined to `Stage2_Data`. For each candidate, expected net value is `predicted_probability * expected_deposit_value - contact_cost`. The optimizer must select exactly six, with total contact cost at most 25 and total capacity units at most 22. The repository includes a seeded p=1 custom diagonal-Hamiltonian statevector QAOA experiment and an exact enumeration of all 210 six-of-ten subsets. The exact classical result is the correctness oracle. The custom Stage-2 statevector implementation is **not** represented as a Qiskit-transpiled circuit; its method and limitations are included in the JSON output.
-3. **Stage 3, probability simulation.** The six selected probabilities are encoded using `RY(2 asin(sqrt(p_i)))` on six qubits. The estimated probability of at least three subscriptions is compared with the exact Poisson-binomial result and a seeded Monte Carlo benchmark. If Qiskit Aer is installed, the pipeline runs an Aer circuit and an explicit depolarizing-noise experiment. If Qiskit Aer is unavailable, it uses a seeded NumPy shot simulator and clearly labels the approximate measurement bit-flip fallback. Do not describe fallback results as Qiskit execution.
+Instead of treating customer prediction, campaign selection, and outcome estimation as isolated tasks, Q-BIRD connects them through a three-stage decision pipeline.
 
-**No quantum advantage is claimed.** The six-qubit circuit prepares independent Bernoulli outcomes from supplied probabilities; it is a probability-estimation demonstration, not proof that quantum computing improves the prediction or business objective.
+It predicts customer responses, identifies the most valuable group under real-world constraints, and uses a quantum probability experiment to study possible campaign outcomes.
 
-## Quick start
+---
 
-Python 3.11 is recommended for compatibility with the pinned quantum packages.
+##  The Problem
 
-### Windows PowerShell
+Banks and financial institutions often work with limited campaign budgets, restricted outreach capacity, and large customer datasets.
 
-```powershell
-cd q-bird
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r backend/requirements.txt
-python run_pipeline.py
+The challenge is not simply identifying customers who might respond. It is deciding:
+
+- Which customers are most likely to respond?
+- Which combination delivers the highest expected value?
+- How should limited campaign budgets and contact capacity be allocated?
+- How can institutions estimate the uncertainty around possible outcomes?
+
+Traditional prediction models can help identify likely responders, but prediction alone does not solve the resource allocation problem.
+
+**Q-BIRD brings these decisions together in one connected workflow.**
+
+---
+
+##  Our Solution
+
+Q-BIRD uses a three-stage intelligence pipeline.
+
+| Stage | Module | Purpose |
+|---|---|---|
+| 01 | **PULSE** | Predicts customer response probabilities using machine learning. |
+| 02 | **BIRD** | Selects the best customer combination under budget and capacity constraints. |
+| 03 | **FAIR** | Simulates and estimates campaign outcomes using quantum probability techniques. |
+
+### 01 — PULSE: Predictive Intelligence
+
+PULSE analyses customer information and estimates the probability of a positive campaign response.
+
+The pipeline evaluates multiple machine learning models:
+
+- Logistic Regression
+- Random Forest
+- Extra Trees
+
+Models are evaluated using stratified five-fold out-of-fold predictions. PR-AUC is used as the primary selection metric, with Brier score as a tie-breaker.
+
+The selected model is then refitted and used to generate predictions for the unlabelled test records.
+
+**Output:** Customer-level response probabilities and prediction results.
+
+### 02 — BIRD: Intelligent Resource Allocation
+
+A high response probability does not automatically make a customer the best choice.
+
+BIRD considers the expected economic value of each customer alongside campaign costs and operational restrictions.
+
+The objective is to maximise:
+
+`Expected Net Value = (Response Probability × Expected Deposit Value) − Contact Cost`
+
+The selection process considers:
+
+- Campaign budget limits
+- Contact capacity limits
+- Customer-level expected value
+- The best combination of selected customers
+
+The current implementation considers the top ten candidates and selects exactly six, subject to the configured constraints.
+
+It compares the optimisation result against an exact enumeration of all 210 possible six-customer combinations.
+
+The quantum-inspired optimisation experiment uses a seeded, diagonal-Hamiltonian statevector approach. The exact classical enumeration acts as a correctness reference.
+
+**Output:** A constrained customer selection with its expected economic value.
+
+### 03 — FAIR: Quantum Probability Simulation
+
+FAIR explores how quantum probability experiments can be applied to campaign outcome estimation.
+
+The selected six customers are represented using six qubits. Each qubit is configured using the corresponding response probability:
+
+`θᵢ = 2 × asin(√pᵢ)`
+
+The experiment compares:
+
+- Finite-shot probability estimates
+- Exact Poisson-binomial probabilities
+- Seeded Monte Carlo simulations
+
+When Qiskit Aer is available, the pipeline can use its quantum simulation capabilities with a depolarising noise model. Otherwise, a seeded NumPy shot simulator provides a clearly labelled measurement bit-flip fallback.
+
+The goal is to examine probability estimation and simulation behaviour, not to claim that a quantum computer currently outperforms classical computing.
+
+**Output:** Campaign outcome probability estimates and simulation comparisons.
+
+---
+
+##  What Makes Q-BIRD Different?
+
+Q-BIRD is not just another customer prediction dashboard.
+
+Its key idea is connecting three different decision-making layers:
+
+**1. Prediction + optimisation**
+
+Rather than stopping after calculating customer probabilities, Q-BIRD uses those predictions to make constrained resource allocation decisions.
+
+**2. Economic awareness**
+
+Customer selection accounts for expected value, contact cost, available budget, and operational capacity.
+
+**3. Quantum probability exploration**
+
+The final stage investigates quantum circuit-based probability estimation and compares it against classical probability methods.
+
+**4. Reproducibility**
+
+Seeded experiments and saved outputs make it easier to inspect and reproduce the pipeline's results.
+
+**5. Transparent limitations**
+
+The system distinguishes actual model outputs, optimisation results, and simulated quantum measurements. It does not present a simulation as proof of quantum advantage.
+
+---
+
+##  System Architecture
+
+```text
+                Q-BIRD FRONTEND
+                       |
+           User Controls & Dashboard
+                       |
+                       v
+               FASTAPI BACKEND
+                       |
+                       v
+              THREE-STAGE PIPELINE
+                       |
+          +------------+------------+
+          |            |            |
+          v            v            v
+        PULSE         BIRD          FAIR
+      Prediction   Optimisation   Simulation
+          |            |            |
+          v            v            v
+      Response     Selected      Probability
+      Probabilities Customers     Estimates
+          |            |            |
+          +------------+------------+
+                       |
+                       v
+               RESULTS & EXPORTS
 ```
 
-### macOS / Linux
+### Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | HTML, CSS, JavaScript, React |
+| Backend | Python, FastAPI |
+| Machine Learning | Scikit-learn |
+| Quantum Simulation | Qiskit Aer, when available |
+| Numerical Simulation | NumPy |
+| Data Processing | Pandas |
+| Dataset | Atomiq banking campaign participant dataset |
+
+---
+
+##  Dataset & Experimental Setup
+
+Q-BIRD uses the provided banking campaign participant dataset.
+
+The current dataset contains:
+
+| Dataset component | Records |
+|---|---:|
+| Labelled training records | 300 |
+| Positive training records | 35 |
+| Unlabelled test records | 100 |
+| Total records | 400 |
+
+The dataset also includes campaign economics used by the optimisation stage.
+
+The relatively small number of labelled records means that model evaluation results should be interpreted cautiously. Cross-validation helps assess performance, but it does not eliminate uncertainty or guarantee generalisation to a larger banking population.
+
+The project uses the supplied dataset rather than presenting generated customer records as real-world evidence.
+
+---
+
+##  Getting Started
+
+There are two ways to explore Q-BIRD.
+
+### Option 1 — Open the Standalone HTML Frontend
+
+<badge color="success">Quickest way to view the interface</badge>
+
+You can access the standalone frontend directly from the repository without installing Python, Node.js, or additional dependencies.
+
+1. Open this GitHub repository.
+2. Navigate to `q-bird/Q-BIRD-frontend.html`.
+3. Click **Download raw file** or open the file and save it.
+4. Locate the downloaded HTML file on your computer.
+5. Double-click it to open it in Chrome, Edge, or Firefox.
+
+That's it. You can explore the standalone interface and its embedded result snapshots.
+
+**Important:** This standalone HTML is a presentation-ready frontend. It does not start the Python backend, execute the machine learning pipeline, or make live API requests. For live pipeline execution, follow Option 2.
+
+### Option 2 — Run the Full Backend-Connected Application
+
+<badge color="info">Full application experience</badge>
+
+This option runs the React dashboard and connects it to the FastAPI backend.
+
+#### Requirements
+
+- Python 3.11 recommended
+- Node.js and npm
+- Git
+
+#### Step 1 — Clone the repository
 
 ```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd q-bird
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r backend/requirements.txt
-python run_pipeline.py
 ```
 
-The default run uses the included official workbook and the official fixed limits (`budget=25`, `capacity=22`). To supply another copy of the same workbook:
+Replace the repository URL with your actual GitHub clone URL.
+
+#### Step 2 — Install backend dependencies
+
+From the repository root:
 
 ```bash
-python run_pipeline.py --workbook /path/to/bank_campaign_participant_release.xlsx
+pip install -r backend/requirements.txt
 ```
 
-The script writes the result files into the repository root. The API can also be started with:
+#### Step 3 — Start the backend
 
 ```bash
 uvicorn backend.main:app --reload --port 8000
 ```
 
-Then open `http://localhost:8000/docs`. The React dashboard can be started in a second terminal:
+The backend will be available at:
+
+```text
+http://localhost:8000
+```
+
+Check whether it is running:
+
+```text
+http://localhost:8000/health
+```
+
+#### Step 4 — Start the frontend
+
+Open a second terminal:
 
 ```bash
 cd frontend
@@ -58,62 +274,212 @@ npm install
 npm run dev
 ```
 
-The standalone `Q-BIRD-frontend.html` supplied alongside the project is a **frontend-only presentation**. It has embedded snapshot data and export interactions; it does not run Python, call the backend, retrain models, or recompute the quantum simulation.
+Open the local URL displayed by Vite, usually:
 
-## Mandatory result files
+```text
+http://localhost:5173
+```
 
-All are written at the repository root:
+The React frontend uses the backend API to execute the pipeline and retrieve generated results.
 
-- `stage1_predictions.csv`: 100 rows, `customer_id`, `predicted_probability`, `rank`, `is_top_10`.
-- `stage2_selection.csv` and `stage2_selection.json`: selected six, operational inputs, expected net value, constraints, QAOA sample, exact classical optimum, and optimality gap.
-- `stage3_simulation.csv` and `stage3_simulation.json`: six customer-to-qubit mapping, input probabilities, shot estimates, exact result, Monte Carlo result, noise details, and circuit metadata.
-- `run_metadata.json`: seed, environment versions, validation metrics, selected model, methods, and runtime.
+#### Optional — Configure the backend URL
 
-## Mathematical definitions
+The frontend defaults to:
 
-For customer `i`, let `p_i` be the Stage 1 predicted probability, `v_i` the expected deposit value, `c_i` the contact cost, `h_i` the capacity units, and `x_i` the binary contact decision.
+```text
+http://localhost:8000
+```
 
-\[
-\max_x \sum_{i=1}^{10} x_i(p_i v_i-c_i)
-\]
+If your backend is running elsewhere, create a `.env` file inside the `frontend` directory:
 
-subject to
+```env
+VITE_API_URL=http://localhost:8000
+```
 
-\[
-\sum_i x_i=6,\qquad \sum_i c_i x_i\le25,\qquad \sum_i h_i x_i\le22,\qquad x_i\in\{0,1\}.
-\]
+Restart the frontend after changing the environment variable.
 
-There are `choose(10,6) = 210` possible six-customer combinations, so exhaustive enumeration gives an exact classical optimum cheaply. The relative optimality gap is `(classical_optimum - QAOA_objective) / max(abs(classical_optimum), 1e-12)`. A zero gap means the sampled feasible QAOA solution matches the exact objective for this run, not that QAOA is generally superior.
+---
 
-For the six selected independent subscription probabilities, Stage 3 computes `P(X >= 3)` using the Poisson-binomial distribution via dynamic programming. It is also estimated from finite shots and Monte Carlo trials. The exact analytical value is the reference; finite-shot differences are expected.
+##  API Overview
 
-## Reproducibility and caveats
+The FastAPI backend currently exposes the following endpoints:
 
-- Primary seed: `42`, consistent with the workbook's Stage 1 sampling seed.
-- The workbook has only 35 positive labels among the 300 training rows. Metrics will have substantial uncertainty and should not be generalized as production performance.
-- Stage 1 validation metrics use out-of-fold training predictions. They are not test-set metrics.
-- The data has no `duration` field, as specified by the workbook README.
-- Stage 2 uses the official `Stage2_Data` values. Do not replace the objective with the sum of probabilities alone.
-- The QAOA implementation is an educational statevector experiment using a diagonal cost Hamiltonian and soft constraint penalties. It is not a hardware run and the code does not currently transpile a Stage-2 QAOA circuit through Qiskit.
-- The Stage 3 fallback is explicitly labeled if Qiskit Aer cannot import. For a Qiskit circuit/noise run, install the pinned dependencies under a compatible Python version and rerun; inspect `execution_backend` in `stage3_simulation.json` before describing the result.
-- The standalone HTML is a static visual showcase with embedded snapshot values. Re-run the pipeline before submission if code or inputs change, then refresh the snapshot.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Checks backend availability. |
+| POST | `/pipeline/run` | Executes the three-stage pipeline. |
+| GET | `/results/{name}` | Retrieves an allowed generated result file. |
 
-## Repository layout
+The pipeline endpoint accepts optional input data and configuration parameters, including:
+
+- Budget — default: 25
+- Contact capacity — default: 22
+
+The default dataset is loaded from the repository's data directory when no alternative file is provided.
+
+Interactive API documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+##  Project Structure
 
 ```text
 q-bird/
-├── backend/                 # FastAPI service and scientific pipeline
-├── data/                    # Official workbook and schema notes
-├── frontend/                # React dashboard source
-├── stage1_predictions.csv   # Generated result
-├── stage2_selection.csv/.json
-├── stage3_simulation.csv/.json
-├── run_metadata.json
+│
+├── backend/
+│   ├── main.py
+│   ├── pipeline.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── src/
+│   │   ├── App.jsx
+│   │   └── style.css
+│   └── public/
+│       └── assets/
+│           └── qbird-hero.png
+│
+├── data/
+│   ├── bank_campaign_participant_release.xlsx
+│   └── schema.json
+│
+├── Q-BIRD-frontend.html
 ├── run_pipeline.py
-├── requirements.txt         # Backend requirements are in backend/
+├── validate_outputs.py
+├── seeds.json
+│
+├── stage1_predictions.csv
+├── stage2_selection.csv
+├── stage2_selection.json
+├── stage3_simulation.csv
+├── stage3_simulation.json
+├── run_metadata.json
+│
+├── README.md
 └── LICENSE
 ```
 
-## License
+---
 
-MIT. See `LICENSE`.
+##  Generated Outputs
+
+Each pipeline run produces structured outputs that can be inspected or exported.
+
+| File | Contents |
+|---|---|
+| `stage1_predictions.csv` | Customer response predictions. |
+| `stage2_selection.csv` | Selected customer combination. |
+| `stage2_selection.json` | Optimisation summary and constraints. |
+| `stage3_simulation.csv` | Probability simulation results. |
+| `stage3_simulation.json` | Simulation summary and comparisons. |
+| `run_metadata.json` | Run configuration and execution metadata. |
+
+These outputs make the pipeline easier to validate, compare, and reproduce.
+
+---
+
+##  Feasibility & Potential Applications
+
+Q-BIRD explores a workflow that could be useful in banking and financial campaign operations.
+
+Potential applications include:
+
+- Customer outreach prioritisation
+- Deposit campaign planning
+- Budget-conscious customer selection
+- Campaign capacity management
+- Probability-based outcome estimation
+- Decision-support experimentation
+
+### Potential Market Direction
+
+The project could be developed further as a decision-support layer for:
+
+- Banks
+- Financial institutions
+- NBFCs
+- Fintech companies
+- Banking analytics teams
+- Financial campaign management providers
+
+A practical commercial direction would be to offer Q-BIRD as an analytics and optimisation layer that integrates with existing banking systems rather than attempting to replace their core infrastructure.
+
+### Possible Business Model
+
+1. **SaaS licensing:** Subscription-based access for financial institutions.
+2. **Enterprise integration:** Custom API and workflow integration.
+3. **Analytics services:** Campaign optimisation and performance analysis.
+4. **Research partnerships:** Joint experimentation with institutions exploring quantum-assisted financial workflows.
+
+These are potential future directions, not existing commercial deployments or validated market demand.
+
+---
+
+##  Validation & Future Development
+
+The current prototype establishes the core three-stage workflow. Further development could focus on:
+
+### Model improvements
+- Larger and more diverse banking datasets.
+- Stronger out-of-sample validation.
+- Calibration and subgroup performance analysis.
+- Better handling of missing and imbalanced data.
+
+### Optimisation improvements
+- Larger customer-selection problems.
+- More complex operational constraints.
+- Comparisons with established classical optimisation solvers.
+- Scalability and execution-time benchmarking.
+
+### Quantum experimentation
+- Hardware-compatible quantum circuit implementations.
+- More extensive noise analysis.
+- Comparisons across circuit sizes and shot counts.
+- Benchmarks against classical alternatives.
+
+### Product development
+- Role-based access and secure authentication.
+- Audit logs and model-version tracking.
+- Production-grade deployment.
+- Integration with authorised banking data sources.
+- Better monitoring and explainability.
+
+---
+
+## Limitations & Responsible Use
+
+Q-BIRD is an experimental hackathon and research prototype.
+
+A few important distinctions:
+
+- Quantum simulation is not the same as execution on a real quantum computer.
+- No quantum advantage over classical methods is claimed.
+- Small training datasets can produce uncertain performance estimates.
+- Simulation results are not guaranteed predictions of actual campaign performance.
+- The system has not been validated for production banking decisions.
+- The current backend is not a production-secured financial service.
+
+Do not upload real customer personal or financial information to a publicly accessible deployment.
+
+Before any real financial deployment, the system would require security reviews, privacy safeguards, appropriate authorisation, independent validation, fairness testing, and regulatory assessment.
+
+---
+
+
+##  License
+
+This project is distributed under the MIT License. See the `LICENSE` file for details.
+
+---
+
+<p align="center">
+  <strong>Q-BIRD</strong><br/>
+  Predict. Prioritise. Simulate.<br/>
+  <em>Exploring the next layer of intelligent banking decisions.</em>
+</p>
